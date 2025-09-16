@@ -1,0 +1,34 @@
+# Ignore all .log files
+*.log
+
+# Ignore the 'temp' directory and its contents
+temp/
+
+# Ignore the 'node_modules' directory (common in Node.js projects)
+node_modules/
+
+# Ignore specific build output directories
+build/
+dist/
+
+# Ignore specific operating system or editor-generated files
+.DS_Store # macOS
+Thumbs.db # Windows
+.idea/ # IntelliJ IDEA
+.vscode/ # VS Code
+
+# Ignore environment variable files
+.env
+
+# Ignore specific files by name, even if they are in subdirectories
+my_secret_key.pem
+
+# Exclude a specific file from being ignored, even if it matches a broader pattern
+# For example, ignore all .txt files except for 'important.txt'
+*.txt
+!important.txt
+
+# Ignore everything in a directory except for a specific file
+# For example, ignore all files in 'data/' except 'keep_me.csv'
+data/*
+!data/keep_me.csv
