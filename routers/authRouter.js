@@ -1,13 +1,11 @@
-import express from "express"
+import express from "express";
+import { signin, signup } from "../controllers/authController.js";
+
 
 const router = express.Router();
 
-router.post("/signup", (req, res) => {
-    // Add your signup logic here
-});
+router.post("/signup", signup);
 
-router.post("/signin", (req, res) => {
-    // Add your signin logic here
-});
+router.post("/signin", signin);
 
 export { router as authRouter };

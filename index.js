@@ -7,20 +7,23 @@ import mongoose from "mongoose";
 import {authRouter} from "./routers/authRouter.js"
 
 const app = express();
-
 const PORT = process.env.PORT || 5000;
 
-// middlewares
-// Enable Cross-Origin Resource Sharing (allow requests from different domains)
-app.use(cors());  
-// Secure HTTP headers to protect app from common web vulnerabilities
-app.use(helmet());  
-// Parse cookies from the request header (helps in authentication/session handling)
+// Body parsing middlewares must come first
+app.use(express.json());
+app.use(express.urlencoded({ extended: true }));
+
+// Debug middleware after body parsers
+app.use((req, res, next) => {
+    console.log('Request Body:', req.body);
+    next();
+});
+
+// Other middlewares
+app.use(cors());
+app.use(helmet());
 app.use(cookieParser());  
-// Parse incoming requests with JSON payloads
-app.use(express.json());  
-// Parse URL-encoded data (form submissions); extended:true allows nested objects
-app.use(express.urlencoded({ extended: true }));  
+
 
 
 // Database connection..
