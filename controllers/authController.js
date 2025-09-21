@@ -92,14 +92,28 @@ export const signin = async (req, res) => {
             expires: new Date(Date.now() + 8 * 60 * 60 * 1000),
             httpOnly: process.env.NODE_ENV === "production",
             secure: process.env.NODE_ENV === "production"
-        }).json({
+        })
+        .status(200)
+        .json({
             success: true,
             token,
             message: "Signed-in successfully"
         })
-
-        res.status(200).json({ message: "Signin successful" });
     } catch (error) {
         res.status(500).json({ error: error.message });
     }
 };
+
+export const signout = async(req,res) => {
+    try{
+        res.clearCookie("Authorization")
+            .status(200)
+            .json({
+                success: true,
+                message: "Logged out successfully",
+            })
+    }
+    catch(error){
+        res.status(500).json({ error: error.message });
+    }
+}
