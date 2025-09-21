@@ -13,18 +13,11 @@ const PORT = process.env.PORT || 5000;
 app.use(express.json());
 app.use(express.urlencoded({ extended: true }));
 
-// Debug middleware after body parsers
-app.use((req, res, next) => {
-    console.log('Request Body:', req.body);
-    next();
-});
 
 // Other middlewares
 app.use(cors());
 app.use(helmet());
 app.use(cookieParser());  
-
-
 
 // Database connection..
 mongoose.connect(process.env.MONGO_URI)
