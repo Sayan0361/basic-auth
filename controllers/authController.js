@@ -1,6 +1,7 @@
+import { transport } from "../middlewares/sendMail.js";
 import { signinSchema, signupSchema } from "../middlewares/validator.js";
 import { User } from "../models/usersModel.js"
-import { doHash, doHashValidation } from "../utils/hashing.js";
+import { doHash, doHashValidation, hmacProcess } from "../utils/hashing.js";
 import jwt from "jsonwebtoken"
 
 export const signup = async (req, res) => {
@@ -100,6 +101,7 @@ export const signin = async (req, res) => {
             message: "Signed-in successfully"
         })
     } catch (error) {
+        console.log(error);
         res.status(500).json({ error: error.message });
     }
 };
@@ -114,6 +116,61 @@ export const signout = async(req,res) => {
             })
     }
     catch(error){
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const sendVerificationCode = async(req,res) => {
+    const {email} = req.body;
+    try{
+        const existingUser = await User.findOne({
+            email,
+        });
+        if(!existingUser){
+            return res
+				.status(401)
+				.json({ success: false, message: `User with this ${email} doesn't exist!` });
+        }
+
+        if(existingUser.verified){
+            return res
+				.status(400)
+				.json({ success: false, message: `You are already verified` });
+        }
+        // generate random code
+        const codeValue = Math.floor(Math.random() * 100000).toString();
+        // sent the mail via nodemailer (middlewares/sendMail.js)
+        let info = await transport.sendMail({
+            from: process.env.NODE_CODE_SENDING_EMAIL_ADDRESS,
+            to: existingUser.email,
+            subject: "verification code",
+            html: '<h1>' + codeValue + '</h1>',
+        })
+
+        // code has been sent
+        if(info.accepted[0] === existingUser.email){
+            // hash the code 
+            const hashedCodeValue = hmacProcess(codeValue,process.env.HMAC_VERIFICATION_CODE_SECRET);
+            // store the hashed verificationCode in DB
+            existingUser.verificationCode = hashedCodeValue;
+            existingUser.verificationCodeValidation = Date.now();
+
+            await existingUser.save();
+            return res.status(200)
+                    .json({
+                        success:true,
+                        message:"Code has been sent",
+                    })
+        }
+        res.status(400)
+                    .json({
+                        success:false,
+                        message:"Code sent failed!",
+                    })
+    }
+    catch(error){
+        console.log(error);
         res.status(500).json({ error: error.message });
     }
 }
