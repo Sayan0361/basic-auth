@@ -23,3 +23,13 @@ export const signinSchema = Joi.object({
         .required()
         .pattern(new RegExp('^(?=.*[a-zA-Z])(?=.*[0-9]).+$'))
 });
+
+export const acceptCodeSchema = Joi.object({
+    email: Joi.string()
+        .min(5)
+        .max(100)
+        .required()
+        .email(),
+    providedCode: Joi.number()
+        .required()
+})
