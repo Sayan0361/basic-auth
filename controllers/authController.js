@@ -1,5 +1,5 @@
 import { transport } from "../middlewares/sendMail.js";
-import { acceptCodeSchema, signinSchema, signupSchema } from "../middlewares/validator.js";
+import { acceptCodeSchema, changePasswordSchema, signinSchema, signupSchema } from "../middlewares/validator.js";
 import { User } from "../models/usersModel.js"
 import { doHash, doHashValidation, hmacProcess } from "../utils/hashing.js";
 import jwt from "jsonwebtoken"
@@ -178,7 +178,7 @@ export const sendVerificationCode = async(req,res) => {
     }
 }
 
-export const verifyVerificationCode = async(req,res) =>{
+export const verifyVerificationCode = async(req,res) => {
     const {email, providedCode} = req.body;
     try{
         const {error,value} = acceptCodeSchema.validate({
@@ -241,6 +241,57 @@ export const verifyVerificationCode = async(req,res) =>{
                 .status(400)
                 .json({ success: false, message: `Invalid verification code!` });
 
+    }
+    catch(error){
+        console.log(error);
+        res.status(500).json({ error: error.message });
+    }
+}
+
+export const changePassword = async(req,res) => {
+    const { userId, verified } = req.user;
+    const { oldPassword, newPassword } = req.body;
+    try{
+        const {error,value} = changePasswordSchema.validate({
+            oldPassword,
+            newPassword
+        });
+        if (error) {
+            return res
+                .status(401)
+                .json({ success: false, message: error.details[0].message });
+        }
+
+        if(!verified){
+            return res
+                .status(401)
+                .json({ success: false, message: `You are not a verified user` });
+        }
+
+        const existingUser = await User.findOne({
+            _id : userId
+        }).select("+password");
+        if(!existingUser){
+            return res
+                .status(401)
+                .json({ success: false, message: `User doesn't exist!` });
+        }
+        // if old password provided is correct or not
+        const result = await doHashValidation(oldPassword, existingUser.password);
+        if(!result){
+            return res
+                .status(401)
+                .json({ success: false, message: `Invalid Old Password!` });
+        }
+        const hashedPassword = await doHash(newPassword,12);
+        existingUser.password = hashedPassword;
+        await existingUser.save();
+
+        return res.status(200)
+                    .json({
+                        success: true,
+                        message: "Password updated",
+                    });
     }
     catch(error){
         console.log(error);
