@@ -4,9 +4,9 @@ import { createPost, deletePost, getPosts, singlePost, updatePost } from "../con
 
 const router = express.Router();
 
-router.get("/all-posts", identifier, getPosts);
+router.get("/all-posts", getPosts);
 
-router.get("/single-post", identifier, singlePost);
+router.get("/single-post", singlePost);
 
 router.post("/create-post", identifier, createPost);
 

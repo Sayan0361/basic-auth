@@ -58,3 +58,17 @@ export const acceptFPCodeSchema = Joi.object({
         .required()
         .pattern(new RegExp('^(?=.*[a-zA-Z])(?=.*[0-9]).+$'))
 })
+
+
+export const createPostSchema = Joi.object({
+    title: Joi.string()
+        .min(3)
+        .max(100)
+        .required(),
+    description: Joi.string()
+        .min(3)
+        .max(1000)
+        .required(),
+    userId: Joi.string()
+        .required()
+})

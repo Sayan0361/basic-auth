@@ -1,1 +1,1 @@
-This is a basic authenication system
+This is a basic authentication system
