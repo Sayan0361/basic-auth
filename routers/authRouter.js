@@ -1,5 +1,5 @@
 import express from "express";
-import { changePassword, sendVerificationCode, signin, signout, signup, verifyVerificationCode } from "../controllers/authController.js";
+import { changePassword, sendForgotPasswordCode, sendVerificationCode, signin, signout, signup, verifyForgotPasswordCode, verifyVerificationCode } from "../controllers/authController.js";
 import { identifier } from "../middlewares/identification.js";
 
 
@@ -16,5 +16,9 @@ router.patch("/send-verification-code", identifier, sendVerificationCode);
 router.patch("/verify-verification-code", identifier, verifyVerificationCode);
 
 router.patch("/change-password", identifier, changePassword);
+
+router.patch("/send-forgot-password-code", sendForgotPasswordCode);
+
+router.patch("/verify-forgot-password-code", verifyForgotPasswordCode);
 
 export { router as authRouter };
