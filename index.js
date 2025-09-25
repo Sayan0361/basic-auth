@@ -5,6 +5,7 @@ import helmet from "helmet";
 import cookieParser from "cookie-parser";
 import mongoose from "mongoose";
 import {authRouter} from "./routers/authRouter.js"
+import { postsRouter } from "./routers/postsRouter.js";
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -35,6 +36,7 @@ app.get("/",(req,res)=>{
 })
 
 app.use("/api/auth",authRouter);
+app.use("/api/post",postsRouter);
 
 app.listen(PORT, ()=>{
     console.log(`Server is listening on http://localhost:${PORT}`)
